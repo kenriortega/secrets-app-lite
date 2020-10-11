@@ -55,6 +55,7 @@ class _Form extends StatefulWidget {
 class __FormState extends State<_Form> {
   final usernameCtrl = TextEditingController();
   final passCtrl = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
@@ -80,17 +81,22 @@ class __FormState extends State<_Form> {
             onPressed: authService.autenticando
                 ? null
                 : () async {
-                    FocusScope.of(context).unfocus();
-                    final loginOk = await authService.login(
-                      usernameCtrl.text.trim(),
-                      passCtrl.text.trim(),
-                    );
-                    if (loginOk) {
-                      Navigator.pushReplacementNamed(context, 'secrets');
+                    if (usernameCtrl.text.length > 0 &&
+                        passCtrl.text.length > 0) {
+                      FocusScope.of(context).unfocus();
+                      final loginOk = await authService.login(
+                        usernameCtrl.text.trim(),
+                        passCtrl.text.trim(),
+                      );
+                      if (loginOk) {
+                        Navigator.pushReplacementNamed(context, 'secrets');
+                      } else {
+                        // Mostara alerta
+                        mostrarAlerta(context, 'Wrong! Login ',
+                            'Check yours credentials');
+                      }
                     } else {
-                      // Mostara alerta
-                      mostrarAlerta(
-                          context, 'Wrong! Login ', 'Check yours credentials');
+                      mostrarAlerta(context, 'Please ', 'Fill all inputs');
                     }
                   },
             btnColor: GFColors.kPrimarySpotifyLabels,

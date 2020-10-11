@@ -54,9 +54,14 @@ class _DetailSecretPageState extends State<DetailSecretPage> {
         actions: <Widget>[
           Container(
             margin: EdgeInsets.only(right: 10),
-            child: Icon(
-              Icons.check_circle,
-              color: GFColors.kPrimarySpotifyLabels,
+            child: IconButton(
+              icon: Icon(
+                Icons.settings,
+                color: GFColors.kPrimarySpotifyLabels,
+              ),
+              onPressed: () {
+                print('object');
+              },
             ),
           )
         ],

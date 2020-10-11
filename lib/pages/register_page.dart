@@ -71,7 +71,7 @@ class __FormState extends State<_Form> {
             textController: usernameCtrl,
           ),
           CustomInput(
-            icon: Icons.supervised_user_circle,
+            icon: Icons.person,
             placeholder: 'FullName',
             keyboardType: TextInputType.text,
             textController: fullnameCtrl,
@@ -87,18 +87,24 @@ class __FormState extends State<_Form> {
             onPressed: authService.autenticando
                 ? null
                 : () async {
-                    FocusScope.of(context).unfocus();
-                    final registerOk = await authService.register(
-                      usernameCtrl.text.trim(),
-                      fullnameCtrl.text.trim(),
-                      passCtrl.text.trim(),
-                    );
-                    if (registerOk == true) {
-                      Navigator.pushReplacementNamed(context, 'login');
+                    if (usernameCtrl.text.length > 0 &&
+                        passCtrl.text.length > 0 &&
+                        fullnameCtrl.text.length > 0) {
+                      FocusScope.of(context).unfocus();
+                      final registerOk = await authService.register(
+                        usernameCtrl.text.trim(),
+                        fullnameCtrl.text.trim(),
+                        passCtrl.text.trim(),
+                      );
+                      if (registerOk == true) {
+                        Navigator.pushReplacementNamed(context, 'login');
+                      } else {
+                        // Mostara alerta
+                        mostrarAlerta(
+                            context, 'Wrong! register ', 'Check yours inpusts');
+                      }
                     } else {
-                      // Mostara alerta
-                      mostrarAlerta(
-                          context, 'Wrong! register ', 'Check yours inpusts');
+                      mostrarAlerta(context, 'Please ', 'Fill all inputs');
                     }
                   },
             btnColor: GFColors.kPrimarySpotifyLabels,

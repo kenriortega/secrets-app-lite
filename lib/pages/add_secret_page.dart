@@ -34,8 +34,15 @@ class AddSecretPage extends StatelessWidget {
         actions: <Widget>[
           Container(
             margin: EdgeInsets.only(right: 10),
-            child:
-                Icon(Icons.check_circle, color: GFColors.kPrimarySpotifyLabels),
+            child: IconButton(
+              icon: Icon(
+                Icons.settings,
+                color: GFColors.kPrimarySpotifyLabels,
+              ),
+              onPressed: () {
+                print('object');
+              },
+            ),
           )
         ],
       ),
@@ -82,19 +89,19 @@ class __FormState extends State<_Form> {
       child: Column(
         children: <Widget>[
           CustomInput(
-            icon: Icons.supervised_user_circle,
+            icon: Icons.tag,
             placeholder: 'Name',
             keyboardType: TextInputType.text,
             textController: nameCtrl,
           ),
           CustomInput(
-            icon: Icons.supervised_user_circle,
+            icon: Icons.book,
             placeholder: 'Value',
             keyboardType: TextInputType.text,
             textController: valueCtrl,
           ),
           CustomInput(
-            icon: Icons.supervised_user_circle,
+            icon: Icons.category,
             placeholder: 'Category',
             keyboardType: TextInputType.text,
             textController: categoryCtrl,
@@ -103,29 +110,37 @@ class __FormState extends State<_Form> {
             btnColor: GFColors.kPrimarySpotifyLabels,
             btnText: "ADD",
             onPressed: () async {
-              final authService =
-                  Provider.of<AuthService>(context, listen: false);
-              final autenticado = await authService.isLoggedIn();
-              if (autenticado) {
-                final username = await AuthService.getUsername();
-                final addSecretOk = await secretService.addSecret(
-                  username,
-                  nameCtrl.text.trim(),
-                  valueCtrl.text.trim(),
-                  categoryCtrl.text.trim(),
-                );
-                if (addSecretOk == true) {
-                  Navigator.pushReplacementNamed(context, 'secrets');
-                } else {
-                  // Mostara alerta
-                  mostrarAlerta(
-                    context,
-                    'Add secrets ',
-                    "wrong",
+              if (nameCtrl.text.length > 0 &&
+                  valueCtrl.text.length > 0 &&
+                  categoryCtrl.text.length > 0) {
+                final authService =
+                    Provider.of<AuthService>(context, listen: false);
+                final autenticado = await authService.isLoggedIn();
+                if (autenticado) {
+                  final username = await AuthService.getUsername();
+                  final addSecretOk = await secretService.addSecret(
+                    username,
+                    nameCtrl.text.trim(),
+                    valueCtrl.text.trim(),
+                    categoryCtrl.text.trim(),
                   );
-                  Navigator.pushReplacementNamed(context, 'loading');
-                  // AuthService.deleteToken();
+                  if (addSecretOk == true) {
+                    Navigator.pushReplacementNamed(context, 'secrets');
+                  } else {
+                    // Mostara alerta
+                    mostrarAlerta(
+                      context,
+                      'Add secrets ',
+                      "wrong",
+                    );
+                  }
                 }
+              } else {
+                mostrarAlerta(
+                  context,
+                  ' Wrong!! ',
+                  "Fill all inputs",
+                );
               }
             },
           )

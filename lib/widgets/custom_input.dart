@@ -7,7 +7,6 @@ class CustomInput extends StatelessWidget {
   final TextEditingController textController;
   final TextInputType keyboardType;
   final bool isPassword;
-
   const CustomInput({
     Key key,
     @required this.icon,
@@ -26,7 +25,7 @@ class CustomInput extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           boxShadow: <BoxShadow>[
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withOpacity(0.20),
               offset: Offset(0, 5),
               blurRadius: 5,
             )
