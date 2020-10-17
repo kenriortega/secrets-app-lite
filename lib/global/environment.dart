@@ -14,6 +14,8 @@ class Environment {
     var jiffy2 = jiffy.Jiffy(DateTime.now().toIso8601String());
     return secret.createdAt == null ? jiffy2.fromNow() : jiffy1.fromNow();
   }
+
+  static List<String> menuItems = ["secrets", "home"];
 }
 
 class GFColors {
