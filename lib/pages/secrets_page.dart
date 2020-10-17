@@ -5,6 +5,7 @@ import 'package:mntd_pass_lite/helpers/mostrar_alerta.dart';
 import 'package:mntd_pass_lite/models/secret.dart';
 import 'package:mntd_pass_lite/services/auth_service.dart';
 import 'package:mntd_pass_lite/services/secrets_service.dart';
+import 'package:mntd_pass_lite/widgets/menu_items.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -18,6 +19,31 @@ class _SecretsPageState extends State<SecretsPage> {
       RefreshController(initialRefresh: false);
   final secretService = new SecretService();
   List<Secret> secrets = [];
+  bool sidebarOpen = false;
+  double yoffset = 0;
+  double xoffset = 0;
+  double pageScale = 1;
+  int itemSelected = 0;
+  String pageTitle = 'secrets';
+
+  setPageTitle() {
+    switch (itemSelected) {
+      case 0:
+        pageTitle = 'secrets';
+        break;
+      case 1:
+        pageTitle = 'home';
+        break;
+    }
+  }
+
+  setSidebarState() {
+    setState(() {
+      xoffset = sidebarOpen ? 265 : 0;
+      yoffset = sidebarOpen ? 130 : 0;
+      pageScale = sidebarOpen ? 0.8 : 1;
+    });
+  }
 
   @override
   void initState() {
@@ -38,19 +64,21 @@ class _SecretsPageState extends State<SecretsPage> {
       backgroundColor: GFColors.kPrimarySpotify700Color,
       appBar: AppBar(
         title: Text(
-          usuario.username,
-          style: TextStyle(color: GFColors.kPrimarySpotifyLabels),
+          pageTitle,
+          style: TextStyle(color: GFColors.kPrimarySpotify400Color),
         ),
         elevation: 1,
         backgroundColor: GFColors.kPrimarySpotify700Color,
         leading: IconButton(
           icon: Icon(
-            Icons.arrow_back_ios,
-            color: Colors.black54,
+            Icons.menu,
+            color: GFColors.kPrimarySpotify400Color,
           ),
           onPressed: () {
-            Navigator.pushReplacementNamed(context, 'login');
-            AuthService.deleteToken();
+            // Navigator.pushReplacementNamed(context, 'login');
+            // AuthService.deleteToken();
+            sidebarOpen = !sidebarOpen;
+            setSidebarState();
           },
         ),
         actions: <Widget>[
@@ -58,28 +86,127 @@ class _SecretsPageState extends State<SecretsPage> {
             margin: EdgeInsets.only(right: 10),
             child: IconButton(
               icon: Icon(
-                Icons.settings,
-                color: GFColors.kPrimarySpotifyLabels,
+                Icons.lightbulb_outline,
+                color: GFColors.kPrimarySpotify400Color,
               ),
               onPressed: () {
-                print('object');
+                print('change theme');
               },
             ),
           )
         ],
       ),
-      body: SmartRefresher(
-        controller: _refreshController,
-        enablePullDown: true,
-        onRefresh: _cargarSecrets,
-        header: WaterDropHeader(
-          complete: Icon(
-            Icons.check,
-            color: GFColors.kPrimarySpotifyLabels,
+      body: Stack(
+        children: [
+          // zona Sidebar
+          Container(
+            width: double.infinity,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Container(
+                  margin: EdgeInsets.only(top: 24),
+                  color: GFColors.kPrimarySpotify700Color,
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(20),
+                        child: CircleAvatar(
+                          child: Text(
+                            usuario.username.substring(0, 2),
+                            style: TextStyle(
+                              color: GFColors.colorPrimary900,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          backgroundColor: GFColors.kPrimarySpotifyLabels,
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.all(20),
+                        child: Text(
+                          usuario.fullName == ""
+                              ? usuario.username
+                              : usuario.fullName,
+                          style: TextStyle(
+                            color: GFColors.kPrimarySpotify400Color,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  child: Expanded(
+                    child: ListView.builder(
+                      itemCount: Environment.menuItems.length,
+                      itemBuilder: (context, i) => GestureDetector(
+                        onTap: () {
+                          sidebarOpen = false;
+                          itemSelected = i;
+                          setSidebarState();
+                          setPageTitle();
+                        },
+                        child: MenuItem(
+                          item: Environment.menuItems[i],
+                          selected: itemSelected,
+                          position: i,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pushReplacementNamed(context, 'login');
+                      AuthService.deleteToken();
+                    },
+                    child: MenuItem(
+                      item: "Logout",
+                      selected: itemSelected,
+                      position: Environment.menuItems.length + 1,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-          waterDropColor: GFColors.kPrimarySpotifyLabels,
-        ),
-        child: _secretsListView(),
+          // Zona Secrets APP
+          AnimatedContainer(
+            curve: Curves.easeInOut,
+            duration: Duration(milliseconds: 200),
+            transform: Matrix4.translationValues(xoffset, yoffset, 1.0)
+              ..scale(pageScale),
+            width: double.infinity,
+            height: double.infinity,
+            decoration: BoxDecoration(
+              color: GFColors.kPrimarySpotify700Color,
+              borderRadius: sidebarOpen
+                  ? BorderRadius.circular(20)
+                  : BorderRadius.circular(0),
+            ),
+            child: pageTitle == 'secrets'
+                ? SmartRefresher(
+                    controller: _refreshController,
+                    enablePullDown: true,
+                    onRefresh: _cargarSecrets,
+                    header: WaterDropHeader(
+                      complete: Icon(
+                        Icons.check,
+                        color: GFColors.kPrimarySpotifyLabels,
+                      ),
+                      waterDropColor: GFColors.kPrimarySpotifyLabels,
+                    ),
+                    child: _secretsListView(),
+                  )
+                : Container(
+                    child: Center(child: Text("Profile")),
+                  ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: GFColors.kPrimarySpotifyLabels,
@@ -173,10 +300,10 @@ class _SecretsPageState extends State<SecretsPage> {
           height: 20,
           child: Center(
             child: Text(
-              secret.category,
+              "# ${secret.category}",
               style: TextStyle(
-                fontSize: 12,
-                color: GFColors.colorPrimary900,
+                fontSize: 14,
+                color: GFColors.kPrimarySpotify700Color,
                 fontWeight: FontWeight.bold,
               ),
             ),
