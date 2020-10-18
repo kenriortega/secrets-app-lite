@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mntd_pass_lite/global/environment.dart';
 import 'package:mntd_pass_lite/helpers/mostrar_alerta.dart';
+import 'package:mntd_pass_lite/models/login_response.dart';
 import 'package:mntd_pass_lite/models/secret.dart';
 import 'package:mntd_pass_lite/services/auth_service.dart';
 import 'package:mntd_pass_lite/services/secrets_service.dart';
@@ -60,6 +61,8 @@ class _SecretsPageState extends State<SecretsPage> {
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
     final usuario = authService.user;
+    Size size = MediaQuery.of(context).size;
+
     return Scaffold(
       backgroundColor: GFColors.kPrimarySpotify700Color,
       appBar: AppBar(
@@ -189,33 +192,160 @@ class _SecretsPageState extends State<SecretsPage> {
                   : BorderRadius.circular(0),
             ),
             child: pageTitle == 'secrets'
-                ? SmartRefresher(
-                    controller: _refreshController,
-                    enablePullDown: true,
-                    onRefresh: _cargarSecrets,
-                    header: WaterDropHeader(
-                      complete: Icon(
-                        Icons.check,
-                        color: GFColors.kPrimarySpotifyLabels,
-                      ),
-                      waterDropColor: GFColors.kPrimarySpotifyLabels,
-                    ),
-                    child: _secretsListView(),
-                  )
-                : Container(
-                    child: Center(child: Text("Profile")),
-                  ),
+                ? buildSecretsSmartRefrsh()
+                : buildProfileContainer(context, size, usuario),
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: GFColors.kPrimarySpotifyLabels,
-        child: Icon(
-          Icons.add,
-          color: GFColors.colorPrimary900,
+      floatingActionButton: pageTitle == 'secrets'
+          ? FloatingActionButton(
+              backgroundColor: GFColors.kPrimarySpotifyLabels,
+              child: Icon(
+                Icons.add,
+                color: GFColors.colorPrimary900,
+              ),
+              elevation: 1,
+              onPressed: addNewSecret,
+            )
+          : null,
+    );
+  }
+
+  SmartRefresher buildSecretsSmartRefrsh() {
+    return SmartRefresher(
+      controller: _refreshController,
+      enablePullDown: true,
+      onRefresh: _cargarSecrets,
+      header: WaterDropHeader(
+        complete: Icon(
+          Icons.check,
+          color: GFColors.kPrimarySpotifyLabels,
         ),
-        elevation: 1,
-        onPressed: addNewSecret,
+        waterDropColor: GFColors.kPrimarySpotifyLabels,
+      ),
+      child: _secretsListView(),
+    );
+  }
+
+  Container buildProfileContainer(
+      BuildContext context, Size size, LoginResponse usuario) {
+    return Container(
+      height: MediaQuery.of(context).size.height * .9,
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  children: [
+                    Align(
+                      alignment: Alignment.center,
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.lock_open,
+                          color: GFColors.kPrimarySpotify400Color,
+                        ),
+                        onPressed: () {
+                          // TODO: change password
+                          setState(() {});
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                height: size.height * 0.7,
+                width: size.width * 0.75,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(63),
+                    bottomLeft: Radius.circular(63),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      offset: Offset(0, 10),
+                      blurRadius: 60,
+                      color: GFColors.kPrimarySpotify800Color.withOpacity(0.29),
+                    ),
+                  ],
+                  image: DecorationImage(
+                    fit: BoxFit.cover,
+                    alignment: Alignment.center,
+                    image: AssetImage("assets/user.png"),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 23),
+            child: Row(
+              children: [
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: "Name: ${usuario.username}\n",
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: GFColors.kPrimarySpotify400Color,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextSpan(
+                        text:
+                            "Create At: ${Environment.getTimeStampUser(usuario)}",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: GFColors.kPrimarySpotify400Color,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Spacer(),
+                Container(
+                  width: 80,
+                  height: 20,
+                  child: Center(
+                    child: Text(
+                      "# ${usuario.role}",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: GFColors.kPrimarySpotify700Color,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  decoration: BoxDecoration(
+                    color: GFColors.kPrimarySpotifyLabels,
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                ),
+                // Spacer(),
+              ],
+            ),
+          ),
+          SizedBox(height: 23),
+          Center(
+            child: usuario.fullName == " "
+                ? Text(
+                    "I`m ${usuario.fullName}",
+                    style: TextStyle(
+                        color: GFColors.kPrimarySpotify400Color, fontSize: 18),
+                  )
+                : Text(
+                    "I`m ${usuario.username}",
+                    style: TextStyle(
+                        color: GFColors.kPrimarySpotify400Color, fontSize: 18),
+                  ),
+          )
+        ],
       ),
     );
   }
