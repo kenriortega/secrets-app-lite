@@ -6,7 +6,6 @@ import 'package:mntd_pass_lite/global/environment.dart';
 import 'package:mntd_pass_lite/helpers/mostrar_alerta.dart';
 import 'package:mntd_pass_lite/services/auth_service.dart';
 import 'package:mntd_pass_lite/services/secrets_service.dart';
-import 'package:mntd_pass_lite/widgets/custom_logo.dart';
 import 'package:provider/provider.dart';
 
 class DetailSecretPage extends StatefulWidget {
@@ -60,7 +59,6 @@ class _DetailSecretPageState extends State<DetailSecretPage> {
           physics: BouncingScrollPhysics(),
           child: Container(
             height: MediaQuery.of(context).size.height * .9,
-            // child: ColumnOld(secretService: secretService),
             child: Column(
               children: [
                 Row(
@@ -278,56 +276,5 @@ class _DetailSecretPageState extends State<DetailSecretPage> {
     secretService.scretDetail = await secretService.getSecret(
         secretService.scretDetail.username, secretService.scretDetail.name);
     setState(() {});
-  }
-}
-
-class ColumnOld extends StatelessWidget {
-  const ColumnOld({
-    Key key,
-    @required this.secretService,
-  }) : super(key: key);
-
-  final SecretService secretService;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        CustomLogo(
-          srcImage: 'assets/user.png',
-          textTitle: secretService.scretDetail.name,
-        ),
-        // _Form(),
-        Container(
-          child: Column(
-            children: <Widget>[
-              Text(
-                "Created ${Environment.getTimeStamp(secretService.scretDetail)}",
-                style: TextStyle(
-                  color: GFColors.kPrimarySpotifyLabels,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                "Catagory ${secretService.scretDetail.category}",
-                style: TextStyle(
-                  color: GFColors.kPrimarySpotifyLabels,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                "Value ${secretService.scretDetail.value}",
-                style: TextStyle(
-                  color: GFColors.kPrimarySpotifyLabels,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-        Container(),
-      ],
-    );
   }
 }
