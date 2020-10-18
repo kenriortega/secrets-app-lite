@@ -28,6 +28,7 @@ class LoadingPage extends StatelessWidget {
                       child: CustomLogo(
                         srcImage: 'assets/waiting.png',
                         textTitle: 'waiting...',
+                        colorText: GFColors.kPrimarySpotify400Color,
                       ),
                     ),
                   ],

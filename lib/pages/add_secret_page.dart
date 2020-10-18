@@ -25,26 +25,26 @@ class AddSecretPage extends StatelessWidget {
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,
-            color: Colors.black54,
+            color: GFColors.kPrimarySpotify400Color,
           ),
           onPressed: () {
             Navigator.pushReplacementNamed(context, 'secrets');
           },
         ),
-        actions: <Widget>[
-          Container(
-            margin: EdgeInsets.only(right: 10),
-            child: IconButton(
-              icon: Icon(
-                Icons.settings,
-                color: GFColors.kPrimarySpotifyLabels,
-              ),
-              onPressed: () {
-                print('object');
-              },
-            ),
-          )
-        ],
+        // actions: <Widget>[
+        //   Container(
+        //     margin: EdgeInsets.only(right: 10),
+        //     child: IconButton(
+        //       icon: Icon(
+        //         Icons.settings,
+        //         color: GFColors.kPrimarySpotifyLabels,
+        //       ),
+        //       onPressed: () {
+        //         print('object');
+        //       },
+        //     ),
+        //   )
+        // ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(

@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+
 import 'package:mntd_pass_lite/global/environment.dart';
 
 class CustomLogo extends StatelessWidget {
   final String srcImage;
   final String textTitle;
+  final Color colorText;
 
   const CustomLogo({
     Key key,
     @required this.srcImage,
     this.textTitle = "MyApp",
+    this.colorText = GFColors.kPrimarySpotifyLabels,
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -26,7 +29,7 @@ class CustomLogo extends StatelessWidget {
               this.textTitle,
               style: TextStyle(
                 fontSize: 30,
-                color: GFColors.kPrimarySpotifyLabels,
+                color: this.colorText,
               ),
             )
           ],

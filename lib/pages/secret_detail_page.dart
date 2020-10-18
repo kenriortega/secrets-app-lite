@@ -15,6 +15,7 @@ class DetailSecretPage extends StatefulWidget {
 }
 
 class _DetailSecretPageState extends State<DetailSecretPage> {
+  bool showSecret = false;
   @override
   void initState() {
     this._cargarSecret();
@@ -31,13 +32,15 @@ class _DetailSecretPageState extends State<DetailSecretPage> {
     final authService = Provider.of<AuthService>(context);
     final secretService = Provider.of<SecretService>(context);
     final usuario = authService.user;
+    Size size = MediaQuery.of(context).size;
+
     return Scaffold(
       backgroundColor: GFColors.kPrimarySpotify700Color,
       appBar: AppBar(
         title: Text(
           usuario.username,
           style: TextStyle(
-            color: GFColors.kPrimarySpotifyLabels,
+            color: GFColors.kPrimarySpotify400Color,
           ),
         ),
         elevation: 1,
@@ -45,81 +48,156 @@ class _DetailSecretPageState extends State<DetailSecretPage> {
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,
-            color: Colors.black54,
+            color: GFColors.kPrimarySpotify400Color,
           ),
           onPressed: () {
             Navigator.pushReplacementNamed(context, 'secrets');
           },
         ),
-        actions: <Widget>[
-          Container(
-            margin: EdgeInsets.only(right: 10),
-            child: IconButton(
-              icon: Icon(
-                Icons.settings,
-                color: GFColors.kPrimarySpotifyLabels,
-              ),
-              onPressed: () {
-                print('object');
-              },
-            ),
-          )
-        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           physics: BouncingScrollPhysics(),
           child: Container(
             height: MediaQuery.of(context).size.height * .9,
+            // child: ColumnOld(secretService: secretService),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                CustomLogo(
-                  srcImage: 'assets/user.png',
-                  textTitle: secretService.scretDetail.name,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Align(
+                            alignment: Alignment.center,
+                            child: IconButton(
+                              icon: Icon(
+                                Icons.edit,
+                                color: GFColors.kPrimarySpotify400Color,
+                              ),
+                              onPressed: editSecret,
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.center,
+                            child: IconButton(
+                              icon: showSecret
+                                  ? Icon(
+                                      Icons.lock,
+                                      color: GFColors.kPrimarySpotify400Color,
+                                    )
+                                  : Icon(
+                                      Icons.lock_open,
+                                      color: GFColors.kPrimarySpotify400Color,
+                                    ),
+                              onPressed: () {
+                                showSecret = !showSecret;
+                                setState(() {});
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      height: size.height * 0.7,
+                      width: size.width * 0.75,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(63),
+                          bottomLeft: Radius.circular(63),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            offset: Offset(0, 10),
+                            blurRadius: 60,
+                            color: GFColors.kPrimarySpotify800Color
+                                .withOpacity(0.29),
+                          ),
+                        ],
+                        image: DecorationImage(
+                          fit: BoxFit.cover,
+                          alignment: Alignment.centerLeft,
+                          image: AssetImage("assets/lock1.jpg"),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                // _Form(),
-                Container(
-                  child: Column(
-                    children: <Widget>[
-                      Text(
-                        "Created ${Environment.getTimeStamp(secretService.scretDetail)}",
-                        style: TextStyle(
-                          color: GFColors.kPrimarySpotifyLabels,
-                          fontWeight: FontWeight.bold,
+                SizedBox(
+                  height: 20,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 23),
+                  child: Row(
+                    children: [
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: "Name: ${secretService.scretDetail.name}\n",
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: GFColors.kPrimarySpotify400Color,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            TextSpan(
+                              text:
+                                  "Fecha: ${Environment.getTimeStamp(secretService.scretDetail)}",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: GFColors.kPrimarySpotify400Color,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Text(
-                        "Catagory ${secretService.scretDetail.category}",
-                        style: TextStyle(
+                      Spacer(),
+                      Container(
+                        width: 80,
+                        height: 20,
+                        child: Center(
+                          child: Text(
+                            "# ${secretService.scretDetail.category}",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: GFColors.kPrimarySpotify700Color,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        decoration: BoxDecoration(
                           color: GFColors.kPrimarySpotifyLabels,
-                          fontWeight: FontWeight.bold,
+                          borderRadius: BorderRadius.circular(100),
                         ),
                       ),
-                      Text(
-                        "Value ${secretService.scretDetail.value}",
-                        style: TextStyle(
-                          color: GFColors.kPrimarySpotifyLabels,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      // Spacer(),
                     ],
                   ),
                 ),
-                Container(),
+                SizedBox(height: 23),
+                Center(
+                  child: showSecret
+                      ? Text(
+                          secretService.scretDetail.value,
+                          style: TextStyle(
+                            color: GFColors.kPrimarySpotify400Color,
+                            fontSize: 18,
+                          ),
+                        )
+                      : Text(
+                          "Secret ****** ",
+                          style: TextStyle(
+                              color: GFColors.kPrimarySpotify400Color,
+                              fontSize: 18),
+                        ),
+                )
               ],
             ),
           ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: GFColors.kPrimarySpotifyLabels,
-        child: Icon(
-          Icons.edit,
-          color: GFColors.colorPrimary900,
-        ),
-        elevation: 1,
-        onPressed: editSecret,
       ),
     );
   }
@@ -200,5 +278,56 @@ class _DetailSecretPageState extends State<DetailSecretPage> {
     secretService.scretDetail = await secretService.getSecret(
         secretService.scretDetail.username, secretService.scretDetail.name);
     setState(() {});
+  }
+}
+
+class ColumnOld extends StatelessWidget {
+  const ColumnOld({
+    Key key,
+    @required this.secretService,
+  }) : super(key: key);
+
+  final SecretService secretService;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        CustomLogo(
+          srcImage: 'assets/user.png',
+          textTitle: secretService.scretDetail.name,
+        ),
+        // _Form(),
+        Container(
+          child: Column(
+            children: <Widget>[
+              Text(
+                "Created ${Environment.getTimeStamp(secretService.scretDetail)}",
+                style: TextStyle(
+                  color: GFColors.kPrimarySpotifyLabels,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                "Catagory ${secretService.scretDetail.category}",
+                style: TextStyle(
+                  color: GFColors.kPrimarySpotifyLabels,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                "Value ${secretService.scretDetail.value}",
+                style: TextStyle(
+                  color: GFColors.kPrimarySpotifyLabels,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(),
+      ],
+    );
   }
 }
