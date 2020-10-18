@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:mntd_pass_lite/models/login_response.dart';
 import 'package:mntd_pass_lite/models/secret.dart';
 import 'package:jiffy/jiffy.dart' as jiffy;
 
@@ -13,6 +14,12 @@ class Environment {
     var jiffy1 = jiffy.Jiffy(secret.createdAt);
     var jiffy2 = jiffy.Jiffy(DateTime.now().toIso8601String());
     return secret.createdAt == null ? jiffy2.fromNow() : jiffy1.fromNow();
+  }
+
+  static String getTimeStampUser(LoginResponse user) {
+    var jiffy1 = jiffy.Jiffy(user.createdAt);
+    var jiffy2 = jiffy.Jiffy(DateTime.now().toIso8601String());
+    return user.createdAt == null ? jiffy2.fromNow() : jiffy1.fromNow();
   }
 
   static List<String> menuItems = ["secrets", "home"];
